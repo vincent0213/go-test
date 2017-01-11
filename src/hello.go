@@ -91,7 +91,7 @@ func main() {
 	fmt.Println("IO处理：", k, l)
 
 	for i := 0; i < 5; i++ {
-		defer fmt.Printf("DEFER 回收资源：%d ", i)
+		// defer fmt.Printf("DEFER 回收资源：%d ", i)
 	}
 
 	//生成随机种子
@@ -118,19 +118,48 @@ func main() {
 	// fmt.Println(total_tickets, "done")
 
 	//原子操作
-	var cnt uint32 = 0
+	var cnt uint64 = 0
 	for i := 0; i < 10; i++ {
 		go func() {
 			for i := 0; i < 20; i++ {
 				time.Sleep(time.Millisecond)
-				atomic.AddUint32(&cnt, 1)
+				// atomic.AddUint32(&cnt, 1)
+				atomic.AddUint64(&cnt, 1)
 			}
 		}()
 	}
 	time.Sleep(time.Second)             //等一秒钟等goroutine完成
-	cntFinal := atomic.LoadUint32(&cnt) //取数据
+	cntFinal := atomic.LoadUint64(&cnt) //取数据
 	fmt.Println("atom count:", cntFinal)
 
+	//信道Channel(1是buff)
+	channel := make(chan string, 1)
+	channel2 := make(chan string)
+
+	go func() {
+		channel <- "hello"
+		time.Sleep(3 * time.Second)
+		channel <- "World"
+		channel <- "!"
+	}()
+	go func() {
+		channel2 <- "坏人"
+	}()
+	select {
+	case msg1 := <-channel:
+		fmt.Println("channel1 received", msg1)
+	case msg2 := <-channel2:
+		fmt.Println("channel2 received", msg2)
+	}
+	// msg1 := <-channel
+	// fmt.Println(msg1)
+	// msg2 := <-channel
+	// fmt.Println(msg2)
+	// msg3 := <-channel
+	// fmt.Println(msg1, msg2, msg3)
+
+	var input string
+	fmt.Scanln(&input)
 }
 
 func sell_tickets(i int) {
