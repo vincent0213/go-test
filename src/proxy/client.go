@@ -9,7 +9,7 @@ import (
 const RECV_BUF_LEN = 1024
 
 func Client() {
-	listener, err := net.Listen("tcp", "127.0.0.1:9090") //侦听在6666端口
+	listener, err := net.Listen("tcp", ":9090") //侦听在6666端口
 	if err != nil {
 		panic("error listening:" + err.Error())
 	}
