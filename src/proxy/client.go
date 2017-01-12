@@ -19,8 +19,8 @@ func Client() {
 		if err != nil {
 			panic("Error accept:" + err.Error())
 		}
-		n, err := conn.Read(RECV_BUF_LEN)
-		fmt.Println("length:", n)
+		// n, err := conn.Read(RECV_BUF_LEN)
+		// fmt.Println("length:", n)
 		fmt.Println("Accepted the Connection :", conn.RemoteAddr(), conn.LocalAddr())
 		go EchoServer(conn)
 	}
