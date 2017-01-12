@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"proxy"
 	"runtime"
 	"stringutil"
 	"sync"
@@ -91,7 +92,7 @@ func main() {
 	fmt.Println("IO处理：", k, l)
 
 	for i := 0; i < 5; i++ {
-		// defer fmt.Printf("DEFER 回收资源：%d ", i)
+		defer fmt.Printf("DEFER 回收资源：%d ", i)
 	}
 
 	//生成随机种子
@@ -145,12 +146,25 @@ func main() {
 	go func() {
 		channel2 <- "坏人"
 	}()
-	select {
-	case msg1 := <-channel:
-		fmt.Println("channel1 received", msg1)
-	case msg2 := <-channel2:
-		fmt.Println("channel2 received", msg2)
+	time_cnt := 0
+	for {
+		select {
+		case msg1 := <-channel:
+			fmt.Println("channel1 received", msg1)
+		case msg2 := <-channel2:
+			fmt.Println("channel2 received", msg2)
+		case <-time.After(time.Second * 2):
+			time_cnt++
+		}
+		if time_cnt > 3 {
+			fmt.Println("Time Out")
+			break
+		}
 	}
+
+	close(channel)
+	close(channel2)
+	proxy.Client()
 	// msg1 := <-channel
 	// fmt.Println(msg1)
 	// msg2 := <-channel
@@ -158,8 +172,8 @@ func main() {
 	// msg3 := <-channel
 	// fmt.Println(msg1, msg2, msg3)
 
-	var input string
-	fmt.Scanln(&input)
+	// var input string
+	// fmt.Scanln(&input)
 }
 
 func sell_tickets(i int) {
